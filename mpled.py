@@ -7,16 +7,16 @@
 # 24.11.2012: wx-fenster-ausgabe
 # 25.11.2012: erweiterung, um auch mit lvm umgehen zu können
 # 27.11.2012: swap mit aufgenommen
-
+# 30.08.2015: Korrektur bei der Fenstergröße für wxWidgets v3
 
 import wx
 import time
 import os
 
-FIX_CORNER=3           # 0=upper-left, 1=upper-right, 2=lower-left, 3=lower-right
-FONT_SIZE=12           # any Fontsize (~ 8 - 20)
-INCLUDE_SWAP=False     # auf True, wenn die SWAP-Partition angezeigt werden soll
-FRAME_NO_TASKBAR=False # auf True, wenn das Fenster nicht in der Taskbar erscheinen soll
+FIX_CORNER=3          # 0=upper-left, 1=upper-right, 2=lower-left, 3=lower-right
+FONT_SIZE=10          # any Fontsize (~ 8 - 20)
+INCLUDE_SWAP=False    # auf True, wenn die SWAP-Partition angezeigt werden soll
+FRAME_NO_TASKBAR=True # auf True, wenn das Fenster nicht in der Taskbar erscheinen soll
 
 # ###########################################################
 # Mappt Device-Namen auf Mount-Points.
@@ -263,8 +263,11 @@ class MPLED2Panel(wx.Window):
       z+=1
 
     sp=self.parent.GetScreenPosition()        # Bildschirm-Position des Fensters (oben-links)
-    ss=self.parent.GetSizeTuple()             # aktuelle Fenster-Abmessungen
-    ssn=(2*brdrh+2*led_wth+sa+w, h*z+2*brdrv) # neue geforderte Fenster-Abmessungen
+    #ss=self.parent.GetSizeTuple()             # aktuelle Fenster-Abmessungen
+    #ssn=(2*brdrh+2*led_wth+sa+w, h*z+2*brdrv) # neue geforderte Fenster-Abmessungen
+    ss=self.parent.GetSize()             # aktuelle Fenster-Abmessungen
+    ssc=self.parent.GetSize()-self.parent.GetClientSize() # Korrektur-Werte für wxWidgets3
+    ssn=(2*brdrh+2*led_wth+sa+w+ssc[0], h*z+2*brdrv+ssc[1]) # neue geforderte Fenster-Abmessungen
     if ss!=ssn: # wenn sich die Größe geändert hat...
       dwh=(ssn[0]-ss[0], ssn[1]-ss[1])  # Delta-Werte
       if FIX_CORNER==0:   # upper-left
